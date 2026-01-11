@@ -28,8 +28,7 @@ namespace TaskManager.Controllers
         public async Task<IActionResult> Index()
         {
             var users = await _userManager.Users.ToListAsync();
-            
-            // Get roles for each user
+
             var usersWithRoles = new List<UserWithRolesViewModel>();
             foreach (var user in users)
             {
@@ -218,7 +217,6 @@ namespace TaskManager.Controllers
                 return NotFound();
             }
 
-            // Check if user is the last administrator
             var roles = await _userManager.GetRolesAsync(user);
             if (roles.Contains("Administrator"))
             {
