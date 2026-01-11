@@ -1,49 +1,108 @@
 ﻿@model TaskManager.Models.Group
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edytuj grupę";
+    var allUsers = ViewBag.AvailableUsers as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>;
+    var selectedMemberIds = Model.Members?.Select(m => m.Id).ToList() ?? new List<string>();
+    var canChangeManager = ViewBag.CanChangeManager ?? false;
 }
 
-<h1>Edit</h1>
+<h1>Edytuj grupę</h1>
 
-<h4>Group</h4>
+<h4>@Model.Name</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreatedDate" />
+            
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="CreatedDate" class="control-label"></label>
-                <input asp-for="CreatedDate" class="form-control" />
-                <span asp-validation-for="CreatedDate" class="text-danger"></span>
-            </div>
+
             <div class="form-group">
                 <label asp-for="ManagerId" class="control-label"></label>
-                <select asp-for="ManagerId" class="form-control" asp-items="ViewBag.ManagerId"></select>
-                <span asp-validation-for="ManagerId" class="text-danger"></span>
+                @if (canChangeManager)
+                {
+                    <select asp-for="ManagerId" class="form-select" asp-items="ViewBag.ManagerId">
+                        <option value="">-- Brak menadżera --</option>
+                    </select>
+                    <span asp-validation-for="ManagerId" class="text-danger"></span>
+                    <small class="form-text text-muted">Tylko Administrator może zmieniać menadżera grupy</small>
+                }
+                else
+                {
+                    <input type="text" class="form-control" value="@(Model.Manager?.GetFullName() ?? "Brak menadżera")" readonly />
+                    <input type="hidden" asp-for="ManagerId" />
+                    <small class="form-text text-warning">Tylko Administrator może zmieniać menadżera grupy</small>
+                }
             </div>
+
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <label class="control-label">Członkowie grupy</label>
+                @if (allUsers != null && allUsers.Any())
+                {
+                    <div class="mb-2">
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="selectAllMembers()">Zaznacz wszystkich</button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="deselectAllMembers()">Odznacz wszystkich</button>
+                    </div>
+                    @foreach (var user in allUsers)
+                    {
+                        var isChecked = selectedMemberIds.Contains(user.Value);
+                        <div class="form-check">
+                            <input class="form-check-input member-checkbox" 
+                                   type="checkbox" 
+                                   name="selectedMembers" 
+                                   value="@user.Value" 
+                                   id="member_@user.Value"
+                                   @(isChecked ? "checked" : "") />
+                            <label class="form-check-label" for="member_@user.Value">
+                                @user.Text
+                            </label>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted">Brak dostępnych użytkowników</p>
+                }
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Zapisz" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Powrót do listy</a>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        function selectAllMembers() {
+            document.querySelectorAll('.member-checkbox').forEach(checkbox => {
+                checkbox.checked = true;
+            });
+        }
+
+        function deselectAllMembers() {
+            document.querySelectorAll('.member-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+    </script>
 }

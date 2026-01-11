@@ -1,107 +1,75 @@
 ﻿@model IEnumerable<TaskManager.Models.TaskLog>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Logi zadań";
 }
 
-<h1>Index</h1>
+<h1>Logi zadań</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.User)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Timestamp)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Action)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskItem)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskTitle)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskStatus)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskPriority)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Group)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GroupName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AssignedUserId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AssignedUserFirstName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AssignedUserLastName)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Timestamp)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Action)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TaskItem.CreatedById)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TaskTitle)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TaskStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TaskPriority)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Group.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GroupName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AssignedUserId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AssignedUserFirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AssignedUserLastName)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="card">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Typ</th>
+                        <th>Nazwa</th>
+                        <th>Grupa</th>
+                        <th>Akcja</th>
+                        <th>Użtykownik</th>
+                        <th>Data</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in Model)
+                    {
+                        <tr>
+                            <td>@log.Action</td>
+                            <td>
+                                @if (log.TaskItem != null)
+                                {
+                                    <a asp-controller="TaskItems" asp-action="Details" asp-route-id="@log.TaskItemId">
+                                        @log.TaskTitle
+                                    </a>
+                                }
+                                else
+                                {
+                                    @log.TaskTitle
+                                }
+                            </td>
+                            <td>
+                                @if (log.Group != null)
+                                {
+                                    <a asp-controller="Groups" asp-action="Details" asp-route-id="@log.GroupId">
+                                        @log.GroupName
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Brak grupy</span>
+                                }
+                            </td>
+                            <td>@log.Description</td>
+                            <td>@(log.User?.GetFullName() ?? "Nie znany użytkownik")</td>
+                            <td>@log.Timestamp.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@log.Id" class="btn btn-sm btn-info">
+                                    Szczegóły
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            
+        }
+        else
+        {
+            <div class="alert alert-info" role="alert">
+                <i class="bi bi-info-circle"></i> Brak logów
+            </div>
+        }
+    </div>
+</div>

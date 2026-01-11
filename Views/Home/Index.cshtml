@@ -3,6 +3,86 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">TaskManager</h1>
+    @if (User.Identity?.IsAuthenticated ?? false)
+    {
+        <p class="lead">Hello, @User.Identity.Name!</p>
+        
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-list-task"></i> Zadania
+                        </h5>
+                        <a asp-controller="TaskItems" asp-action="Index" class="btn btn-primary">Idź do zadań</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-people"></i> Grupy
+                        </h5>
+                        <a asp-controller="Groups" asp-action="Index" class="btn btn-primary">Idź do Grup</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-clock-history"></i> Logi zadań
+                        </h5>
+                        <a asp-controller="TaskLogs" asp-action="Index" class="btn btn-primary">Idź do Logów zadań</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (User.IsInRole("Administrator"))
+        {
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <div class="card border-danger">
+                        <div class="card-body">
+                            <h5 class="card-title text-danger">
+                                <i class="bi bi-shield-lock"></i> Panel administratora
+                            </h5>
+                            <a asp-controller="Users" asp-action="Index" class="btn btn-danger">Zarządzaj użytkownikami</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="mt-5">
+            <h3>Quick Info</h3>
+            <div class="alert alert-info">
+                @if (User.IsInRole("Administrator"))
+                {
+                    <p><strong>Role:</strong> Administrator - Wszystkie uprawnienia</p>
+                }
+                else if (User.IsInRole("Manager"))
+                {
+                    <p><strong>Role:</strong> Manager - Tworzenie/zarządzanie zadaniami oraz grupami do których jesteś przypisany</p>
+                }
+                else if (User.IsInRole("User"))
+                {
+                    <p><strong>Role:</strong> User - Możesz przeglądać informację oraz pracować nad przypisanymi zadaniami</p>
+                }
+                else
+                {
+                    <p><strong>Role:</strong> Brak przypisanej roli</p>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <p class="lead">Zaloguj się dla jakiejkolwiek czynności.</p>
+        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary btn-lg">Login</a>
+        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-outline-secondary btn-lg">Register</a>
+    }
 </div>

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using TaskManager.Models;
 
 namespace TaskManager.Controllers
@@ -15,6 +16,11 @@ namespace TaskManager.Controllers
 
         public IActionResult Index()
         {
+            if (!User.Identity?.IsAuthenticated ?? true)
+            {
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+            }
+            
             return View();
         }
 

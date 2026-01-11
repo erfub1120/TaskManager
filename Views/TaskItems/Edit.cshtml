@@ -1,77 +1,97 @@
 ﻿@model TaskManager.Models.TaskItem
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edytuj zadanie";
+    var isUser = ViewBag.IsUser ?? false;
+    var canEditAllFields = ViewBag.CanEditAllFields ?? false;
 }
 
-<h1>Edit</h1>
+<h1>Edytuj zadanie</h1>
 
-<h4>TaskItem</h4>
+@if (isUser)
+{
+    <div class="alert alert-info" role="alert">
+        <i class="bi bi-info-circle"></i> <strong>User Mode:</strong> You can only update the task status.
+    </div>
+}
+
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
+            <input type="hidden" asp-for="CreatedDate" />
+            <input type="hidden" asp-for="CreatedById" />
+            
+            <div class="form-group mb-3">
                 <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
+                <input asp-for="Title" class="form-control" readonly="@isUser" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
-            <div class="form-group">
+
+            <div class="form-group mb-3">
                 <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
+                <textarea asp-for="Description" class="form-control" rows="3" readonly="@isUser"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            <div class="form-group">
+
+            <div class="form-group mb-3">
                 <label asp-for="Status" class="control-label"></label>
-                <select asp-for="Status" class="form-control"></select>
+                <select asp-for="Status" class="form-control" asp-items="ViewBag.Status"></select>
                 <span asp-validation-for="Status" class="text-danger"></span>
+                @if (isUser)
+                {
+                    <small class="form-text text-success">Możesz edytować to pole.</small>
+                }
             </div>
-            <div class="form-group">
+
+            <div class="form-group mb-3">
                 <label asp-for="Priority" class="control-label"></label>
-                <select asp-for="Priority" class="form-control"></select>
+                <select asp-for="Priority" class="form-control" asp-items="ViewBag.Priority" disabled="@isUser"></select>
                 <span asp-validation-for="Priority" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="CreatedDate" class="control-label"></label>
-                <input asp-for="CreatedDate" class="form-control" />
-                <span asp-validation-for="CreatedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UpdatedDate" class="control-label"></label>
-                <input asp-for="UpdatedDate" class="form-control" />
-                <span asp-validation-for="UpdatedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
+
+            <div class="form-group mb-3">
                 <label asp-for="DueDate" class="control-label"></label>
-                <input asp-for="DueDate" class="form-control" />
+                <input asp-for="DueDate" class="form-control" type="date" readonly="@isUser" />
                 <span asp-validation-for="DueDate" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="GroupId" class="control-label"></label>
-                <select asp-for="GroupId" class="form-control" asp-items="ViewBag.GroupId"></select>
-                <span asp-validation-for="GroupId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AssignedUserId" class="control-label"></label>
-                <select asp-for="AssignedUserId" class="form-control" asp-items="ViewBag.AssignedUserId"></select>
-                <span asp-validation-for="AssignedUserId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedById" class="control-label"></label>
-                <select asp-for="CreatedById" class="form-control" asp-items="ViewBag.CreatedById"></select>
-                <span asp-validation-for="CreatedById" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            @if (canEditAllFields)
+            {
+                <div class="form-group mb-3">
+                    <label asp-for="GroupId" class="control-label">Grupa</label>
+                    <select asp-for="GroupId" class="form-control" asp-items="ViewBag.GroupId"></select>
+                    <span asp-validation-for="GroupId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="AssignedUserId" class="control-label">Przypisz do</label>
+                    <select asp-for="AssignedUserId" class="form-control" asp-items="ViewBag.AssignedUserId">
+                    </select>
+                </div>
+            }
+            else
+            {
+                <input type="hidden" asp-for="GroupId" />
+                <input type="hidden" asp-for="AssignedUserId" />
+            }
+
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> Zapisz zmiany
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Anuluj
+                </a>
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Powrót do menu</a>
 </div>
 
 @section Scripts {

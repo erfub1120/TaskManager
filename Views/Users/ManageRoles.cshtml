@@ -1,0 +1,115 @@
+﻿@model TaskManager.Controllers.ManageUserRolesViewModel
+
+@{
+    ViewData["Title"] = "Zarządzanie rolami użytkownika";
+}
+
+<h1>Zarządzanie rolami</h1>
+
+<h4>Użytkownik: @Model.UserEmail</h4>
+<hr />
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zamknij"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zamknij"></button>
+    </div>
+}
+
+@if (TempData["Info"] != null)
+{
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        @TempData["Info"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zamknij"></button>
+    </div>
+}
+
+@if (TempData["Warning"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        @TempData["Warning"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zamknij"></button>
+    </div>
+}
+
+<div class="alert alert-info" role="alert">
+    <strong>Uwaga:</strong> Każdy użytkownik może mieć tylko JEDNĄ rolę. Przypisanie nowej roli automatycznie usunie obecną rolę.
+</div>
+
+<div>
+    <h4>Obecna rola</h4>
+    <hr />
+    @if (Model.UserRoles.Any())
+    {
+        <ul>
+            @foreach (var role in Model.UserRoles)
+            {
+                <li>
+                    <strong>@role</strong>
+                    <form asp-action="RemoveRole" method="post" style="display: inline;">
+                        <input type="hidden" name="userId" value="@Model.UserId" />
+                        <input type="hidden" name="role" value="@role" />
+                        <button type="submit" class="btn btn-sm btn-danger" 
+                                onclick="return confirm('Czy na pewno chcesz usunąć rolę @role? Użytkownik nie będzie miał roli dopóki nie zostanie przypisana nowa.')">
+                            Usuń
+                        </button>
+                    </form>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p class="text-warning">Brak przypisanej roli. Użytkownik potrzebuje roli, aby poprawnie korzystać z systemu.</p>
+    }
+</div>
+
+<div>
+    <h4>@(Model.UserRoles.Any() ? "Zmień rolę" : "Przypisz rolę")</h4>
+    <hr />
+    <form asp-action="AssignRole" method="post">
+        <input type="hidden" name="userId" value="@Model.UserId" />
+        <div class="form-group mb-3">
+            <label for="role" class="control-label">Wybierz rolę</label>
+            <select name="role" id="role" class="form-select" required>
+                <option value="">-- Wybierz rolę --</option>
+                @foreach (var role in Model.AllRoles)
+                {
+                    <option value="@role" disabled="@(Model.UserRoles.Contains(role))">
+                        @role @(Model.UserRoles.Contains(role) ? "(Obecna)" : "")
+                    </option>
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            @(Model.UserRoles.Any() ? "Zmień rolę" : "Przypisz rolę")
+        </button>
+    </form>
+</div>
+
+<div class="mt-4">
+    <h5>Opisy ról</h5>
+    <dl class="row">
+        <dt class="col-sm-3">Administrator</dt>
+        <dd class="col-sm-9">Pełny dostęp do wszystkich funkcji i zarządzania użytkownikami</dd>
+
+        <dt class="col-sm-3">Manager</dt>
+        <dd class="col-sm-9">Może tworzyć i zarządzać grupami oraz zadaniami, które posiada</dd>
+
+        <dt class="col-sm-3">User</dt>
+        <dd class="col-sm-9">Może przeglądać grupy, do których należy i pracować nad przypisanymi zadaniami</dd>
+    </dl>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Index" class="btn btn-secondary">Powrót do listy</a>
+</div>

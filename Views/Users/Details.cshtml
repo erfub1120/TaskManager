@@ -1,0 +1,89 @@
+﻿@model TaskManager.Models.ApplicationUser
+
+@{
+    ViewData["Title"] = "Szczegóły użytkowników";
+    var roles = ViewBag.Roles as List<string>;
+    var groups = ViewBag.Groups as List<TaskManager.Models.Group>;
+}
+
+<h1>Szczegóły użytkowników</h1>
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">@Model.FirstName @Model.LastName</h4>
+        
+        <dl class="row">
+            <dt class="col-sm-3">Email</dt>
+            <dd class="col-sm-9">@Model.Email</dd>
+
+            <dt class="col-sm-3">Telefon</dt>
+            <dd class="col-sm-9">@Model.Phone</dd>
+
+            <dt class="col-sm-3">Data urodzenia</dt>
+            <dd class="col-sm-9">@(Model.DateOfBirth?.ToString("yyyy-MM-dd") ?? "Nie zaznaczono")</dd>
+
+            <dt class="col-sm-3">Konto utworzono</dt>
+            <dd class="col-sm-9">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</dd>
+
+            <dt class="col-sm-3">Email podtwierdzono</dt>
+            <dd class="col-sm-9">
+                @if (Model.EmailConfirmed)
+                {
+                    <span class="badge bg-success">Tak</span>
+                }
+                else
+                {
+                    <span class="badge bg-warning">Nie</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">Rola</dt>
+            <dd class="col-sm-9">
+                @if (roles != null && roles.Any())
+                {
+                    @foreach (var role in roles)
+                    {
+                        <span class="badge bg-primary me-1">@role</span>
+                    }
+                }
+                else
+                {
+                    <span class="badge bg-secondary">Brak roli</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">Grupy</dt>
+            <dd class="col-sm-9">
+                @if (groups != null && groups.Any())
+                {
+                    <ul class="list-unstyled">
+                        @foreach (var group in groups)
+                        {
+                            <li>
+                                <a asp-controller="Groups" asp-action="Details" asp-route-id="@group.Id">
+                                    @group.Name
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <span class="text-muted">Nie jest członkiem w grupie/ach.</span>
+                }
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="ManageRoles" asp-route-id="@Model.Id" class="btn btn-warning">
+        <i class="bi bi-person-badge"></i> Edytuj rolę
+    </a>
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+        <i class="bi bi-trash"></i> Usuń
+    </a>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Powrót do menu
+    </a>
+</div>

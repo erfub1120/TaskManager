@@ -1,0 +1,66 @@
+﻿@model IEnumerable<TaskManager.Controllers.UserWithRolesViewModel>
+
+@{
+    ViewData["Title"] = "Zarządzanie użytkownikami";
+}
+
+<h1>Zarządzanie użytkownikami</h1>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zamknij"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zamknij"></button>
+    </div>
+}
+
+<p>
+    <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary">Stwórz nowego użytkownika</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Imię i nazwisko</th>
+            <th>Telefon</th>
+            <th>Role</th>
+            <th>Data utworzenia</th>
+            <th>Akcje</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.User.Email</td>
+                <td>@item.User.GetFullName()</td>
+                <td>@item.User.Phone</td>
+                <td>
+                    @if (item.Roles.Any())
+                    {
+                        @string.Join(", ", item.Roles)
+                    }
+                    else
+                    {
+                        <span class="text-muted">Brak roli</span>
+                    }
+                </td>
+                <td>@item.User.CreatedAt.ToString("yyyy-MM-dd")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.User.Id" class="btn btn-sm btn-info">Szczegóły</a>
+                    <a asp-action="ManageRoles" asp-route-id="@item.User.Id" class="btn btn-sm btn-success">Roli</a>
+                    <a asp-action="Delete" asp-route-id="@item.User.Id" class="btn btn-sm btn-danger">Usuń</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

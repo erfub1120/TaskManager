@@ -7,28 +7,38 @@ namespace TaskManager.Models
     {
         [Required(ErrorMessage = "Pole 'Imię' jest obowiązkowe.")]
         [StringLength(100, ErrorMessage = "Maksymalna długość imieni 100.")]
+        [Display(Name = "Imię")]
         public string FirstName { get; set; }
 
         [Required(ErrorMessage = "Pole 'Nazwisko' jest obowiązkowe.")]
         [StringLength(100, ErrorMessage = "Maksymalna długość nazwiska 150.")]
+        [Display(Name = "Nazwisko")]
         public string LastName { get; set; }
 
         [Required(ErrorMessage = "Pole 'Telefon' jest obowiązkowe.")]
         [RegularExpression(@"^\+48-\d{3}-\d{3}-\d{3}$",
             ErrorMessage = "Numer telefonu musi być w formacie +48-XXX-XXX-XXX")]
         [StringLength(15)]
+        [Display(Name = "Telefon")]
         public string Phone { get; set; }
 
         [DataType(DataType.Date, ErrorMessage = "Nieprawidłowy format daty.")]
         [CustomValidation(typeof(ApplicationUser), nameof(ValidateDateOfBirth))]
+        [Display(Name = "Data urodzenia")]
         public DateTime? DateOfBirth { get; set; }
 
+        [Display(Name = "Konto utworzono")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<Group> ManagedGroups { get; set; } = new List<Group>();
         public ICollection<Group> Groups { get; set; } = new List<Group>();
         public ICollection<TaskItem> AssignedTasks { get; set; } = new List<TaskItem>();
         public ICollection<TaskLog> TaskLogs { get; set; } = new List<TaskLog>();
+
+        public string GetFullName()
+        {
+            return $"{FirstName} {LastName}";
+        }
 
         public static ValidationResult? ValidateDateOfBirth(DateTime? dateOfBirth, ValidationContext context)
         {
