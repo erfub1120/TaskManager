@@ -5,22 +5,19 @@ namespace TaskManager.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        [Required(ErrorMessage = "Pole 'Imię' jest obowiązkowe.")]
         [StringLength(100, ErrorMessage = "Maksymalna długość imieni 100.")]
         [Display(Name = "Imię")]
-        public string FirstName { get; set; }
+        public string? FirstName { get; set; }
 
-        [Required(ErrorMessage = "Pole 'Nazwisko' jest obowiązkowe.")]
         [StringLength(100, ErrorMessage = "Maksymalna długość nazwiska 150.")]
         [Display(Name = "Nazwisko")]
-        public string LastName { get; set; }
+        public string? LastName { get; set; }
 
-        [Required(ErrorMessage = "Pole 'Telefon' jest obowiązkowe.")]
         [RegularExpression(@"^\+48-\d{3}-\d{3}-\d{3}$",
             ErrorMessage = "Numer telefonu musi być w formacie +48-XXX-XXX-XXX")]
         [StringLength(15)]
         [Display(Name = "Telefon")]
-        public string Phone { get; set; }
+        public string? Phone { get; set; }
 
         [DataType(DataType.Date, ErrorMessage = "Nieprawidłowy format daty.")]
         [CustomValidation(typeof(ApplicationUser), nameof(ValidateDateOfBirth))]
@@ -37,7 +34,10 @@ namespace TaskManager.Models
 
         public string GetFullName()
         {
-            return $"{FirstName} {LastName}";
+            if (string.IsNullOrEmpty(FirstName) && string.IsNullOrEmpty(LastName))
+                return Email ?? "Nie wiadomy użytkownik";
+
+            return $"{FirstName} {LastName}".Trim();
         }
 
         public static ValidationResult? ValidateDateOfBirth(DateTime? dateOfBirth, ValidationContext context)
